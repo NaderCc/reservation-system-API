@@ -6,7 +6,9 @@ if (!JWR_SECRET) {
 const RESERVATION_CONFIG = {
     MIN_HOUR: 10,
     MAX_HOUR: 22,
-    DURATION_MINUTES: 60
+    DURATION_MINUTES: 60,
+    DATE_PATTERN: /^\d{4}-\d{2}-\d{2}$/,
+    TIME_PATTERN: /^\d{2}:\d{2}$/
 };
 
 const VALIDATION_CONFIG = {
