@@ -1,6 +1,6 @@
-const JWR_SECRET = process.env.JWR_SECRET;
-if (!JWR_SECRET) {
-    throw new Error('JWR_SECRET is not defined');
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET is not defined');
 }
 
 const RESERVATION_CONFIG = {
@@ -34,7 +34,7 @@ const HTTP_MESSAGES = {
 };
 
 module.exports = {
-    JWR_SECRET,
+    JWT_SECRET,
     RESERVATION_CONFIG,
     VALIDATION_CONFIG,
     HTTP_MESSAGES

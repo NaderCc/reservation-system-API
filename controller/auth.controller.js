@@ -1,5 +1,5 @@
 const authService = require('../services/auth.service');
-const { validateUsername, validatePassword, validateLogicCredentials } = require('../utils/validators');
+const { validateUsername, validatePassword } = require('../utils/validators');
 
 exports.register = async(req, res, next) => {
     try {
@@ -9,7 +9,7 @@ exports.register = async(req, res, next) => {
             return res.status(400).json({ error: validationResult.error });
         }
 
-        validation = validatePassword(password);
+        const validation = validatePassword(password);
         if (!validation.valid) {
             return res.status(400).json({ success: false, error: validation.error });
         }
@@ -29,7 +29,12 @@ exports.login = async(req, res, next) => {
     try {
         const { username, password } = req.body;
 
-        let validationResult = validateLogicCredentials(username, password);
+        let validationResult = validateUsername(username);
+        if (!validationResult.valid) {
+            return res.status(400).json({ error: validationResult.error });
+        }
+
+        validationResult = validatePassword(password);
         if (!validationResult.valid) {
             return res.status(400).json({ error: validationResult.error });
         }

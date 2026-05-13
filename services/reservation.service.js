@@ -1,4 +1,4 @@
-const reservationRepository = require('../repositories/reservation.repository');
+const reservationRepository = require('../repo/reservation.repo');
 
 class ReservationService {
     async getUserReservations(userId, limit = 10, offset = 0) {

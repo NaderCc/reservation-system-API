@@ -1,4 +1,4 @@
-const { VALIDATION_RULES, RESERVATION_CONFIG } = require('../config/constants');
+const { VALIDATION_CONFIG, RESERVATION_CONFIG } = require('../config/constants');
 
 // validate username and password based on the rules defined in constants.js
 
@@ -27,11 +27,11 @@ const validateUsername = (username) => {
     if (!username) {
         return { valid: false, error: 'Username is required' };
     }
-    if (username.length < VALIDATION_RULES.USERNAME.MIN_LENGTH) {
-        return { valid: false, error: `Username must be at least ${VALIDATION_RULES.USERNAME.MIN_LENGTH} characters long` };
+    if (username.length < VALIDATION_CONFIG.USERNAME.MIN_LENGTH) {
+        return { valid: false, error: `Username must be at least ${VALIDATION_CONFIG.USERNAME.MIN_LENGTH} characters long` };
     }
-    if (!VALIDATION_RULES.USERNAME.PATTERN.test(username)) {
-        return { valid: false, error: `Username can only contain ${VALIDATION_RULES.USERNAME.PATTERN_DESC}` };
+    if (!VALIDATION_CONFIG.USERNAME.PATTERN.test(username)) {
+        return { valid: false, error: `Username can only contain ${VALIDATION_CONFIG.USERNAME.PATTERN_DESC}` };
     }
     return { valid: true, error: null };
 };
@@ -40,11 +40,25 @@ const validatePassword = (password) => {
     if (!password) {
         return { valid: false, error: 'Password is required' };
     }
-    if (password.length < VALIDATION_RULES.PASSWORD.MIN_LENGTH) {
-        return { valid: false, error: `Password must be at least ${VALIDATION_RULES.PASSWORD.MIN_LENGTH} characters long` };
+    if (password.length < VALIDATION_CONFIG.PASSWORD.MIN_LENGTH) {
+        return { valid: false, error: `Password must be at least ${VALIDATION_CONFIG.PASSWORD.MIN_LENGTH} characters long` };
     }
-    if (!VALIDATION_RULES.PASSWORD.PATTERN.test(password)) {
+    if (!VALIDATION_CONFIG.PASSWORD.PATTERN.test(password)) {
         return { valid: false, error: `Password must meet the required criteria` };
     }
     return { valid: true, error: null };
+};
+
+const validateLogicCredentials = (username, password) => {
+    if (!username || !password) {
+        return { valid: false, error: 'Username and password are required' };
+    }
+    return { valid: true, error: null };
+};
+
+module.exports = {
+    validateReservationDateTime,
+    validateUsername,
+    validatePassword,
+    validateLogicCredentials,
 };

@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 
 const authRoutes = require('./routes/auth.routes');
 const reservationRoutes = require('./routes/reservation.routes');
+const { initDb } = require('./config/db');
 
 const app = express();
 const PORT = process.env.PORT || 9090;
@@ -67,6 +68,14 @@ app.use((err, req, res, next) => {
     res.status(statusCode).json(response);
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+const startServer = async() => {
+    await initDb();
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+};
+
+startServer().catch((err) => {
+    console.error('Failed to start server', err);
+    process.exit(1);
 });

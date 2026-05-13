@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const userRepository = require('../repositories/user.repository');
+const userRepository = require('../repo/user.repo');
 const { JWT_SECRET } = require('../config/constants');
 
 class AuthService {
