@@ -1,9 +1,3 @@
-/**
- * Authentication Service
- * Handles all authentication business logic
- * Single Responsibility: Business Logic Layer
- */
-
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userRepository = require('../repositories/user.repository');
