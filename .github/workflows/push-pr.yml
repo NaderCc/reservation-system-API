@@ -4,15 +4,11 @@ on:
   push:
     branches:
       - main
-      - "release/**"
-    paths:
-      - "src/**"
-      - "docs/**"
-      - "CHANGELOG.md"
+      - "adjust-project"
   pull_request:
     branches:
+      - "adjust-project"
       - main
-      - "release/**"
 jobs:
   test:
     runs-on: ubuntu-latest
