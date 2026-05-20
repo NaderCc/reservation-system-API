@@ -10,53 +10,6 @@ describe('config/db', () => {
         jest.resetModules();
         jest.restoreAllMocks();
     });
-    /*
-    test('exits when required DB env vars are missing', () => {
-        jest.resetModules();
-
-        const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {});
-
-        // remove DB env vars
-        delete process.env.DB_USER;
-        delete process.env.DB_HOST;
-        delete process.env.DB_NAME;
-        delete process.env.DB_PASSWORD;
-        delete process.env.DB_PORT;
-
-        // require the module — it should call process.exit(1)
-        require(DB_PATH);
-
-        // some environments may call process.exit without the numeric code,
-        // so just assert that it was called at all.
-        expect(exitSpy).toHaveBeenCalled();
-
-        exitSpy.mockRestore();
-    });
-    */
-    test('exits when required DB env vars are missing', () => {
-        jest.resetModules();
-
-        jest.doMock('dotenv', () => ({
-            config: () => ({ parsed: {} }) // بيرجع كائن فاضي ومبيعملش Injection
-        }));
-        // لو مستخدم dotenvx في الـ require كخطوة مستقلة، اعمل ليها mock بنفس الطريقة:
-        // jest.mock('@dotenvx/dotenvx', () => ({ config: () => {} }));
-
-        const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {});
-
-        // 2. نمسح المتغيرات من الذاكرة الحالية بأمان
-        delete process.env.DB_USER;
-        delete process.env.DB_HOST;
-        delete process.env.DB_NAME;
-        delete process.env.DB_PASSWORD;
-        delete process.env.DB_PORT;
-
-        require(DB_PATH);
-        expect(exitSpy).toHaveBeenCalledWith(1);
-
-        exitSpy.mockRestore();
-        jest.unmock('dotenv');
-    });
 
     test('exports pool and initDb when env vars are provided (pg mocked)', async() => {
         jest.resetModules();
@@ -98,4 +51,31 @@ describe('config/db', () => {
 
         jest.dontMock('pg');
     });
+
+    test('exits when required DB env vars are missing', () => {
+        jest.resetModules();
+
+        jest.doMock('dotenv', () => ({
+            config: () => ({ parsed: {} }) // بيرجع كائن فاضي ومبيعملش Injection
+        }));
+        // لو مستخدم dotenvx في الـ require كخطوة مستقلة، اعمل ليها mock بنفس الطريقة:
+        // jest.mock('@dotenvx/dotenvx', () => ({ config: () => {} }));
+
+        const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {});
+
+        // 2. نمسح المتغيرات من الذاكرة الحالية بأمان
+        delete process.env.DB_USER;
+        delete process.env.DB_HOST;
+        delete process.env.DB_NAME;
+        delete process.env.DB_PASSWORD;
+        delete process.env.DB_PORT;
+
+        require(DB_PATH);
+        expect(exitSpy).toHaveBeenCalledWith(1);
+
+        exitSpy.mockRestore();
+        jest.unmock('dotenv');
+    });
+
+
 });
