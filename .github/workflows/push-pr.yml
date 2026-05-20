@@ -13,6 +13,15 @@ jobs:
   test:
     runs-on: ubuntu-latest
     
+    env:
+      PORT: '9090'
+      DB_USER: 'postgres'
+      DB_PASSWORD: 'password123'
+      DB_NAME: 'reservation_db'
+      DB_HOST: 'localhost'
+      DB_PORT:  5430
+      JWT_SECRET: 'super_secret_key_2026'
+      
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v4
