@@ -1,16 +1,12 @@
 // ========================================
 // Jenkins Pipeline للـ Reservation System
 // ========================================
-// دا ملف تعليمات Jenkins بسيط جداً
-// كل مرة تضغط Push ياخد الكود ويشتغل الخطوات دي:
-// ========================================
 
 pipeline {
     agent any
     
     tools {
         nodejs 'node20' 
-        // بننادي هنا على نفس الاسم المكتوب في خانة Name جوه الـ Jenkins Tools
         dockerTool 'docker20' 
     }
     
@@ -51,20 +47,15 @@ pipeline {
             }
         }
         
-        // مرحلة 4: بناء وتشغيل الحاويات باستخدام الأداة المعرفة في جينكينز
         stage('4-Docker Compose Deploy') {
             steps {
                 echo '--- جاري التشغيل باستخدام الـ docker-compose الموثوق من الـ Tools ---'
-                
-                // طالما شغالين بـ Docker Client حديث ومتوافق، هنشغل الـ compose المباشر عل طول
-                // ومن غير اللف بتاع الـ docker run المساعد اللي كان بيعمل مشاكل في الـ API version
                 sh 'docker-compose up -d --build'
             }
         }
-    }
-}
-    
-    // لما تخلص كل المراحل
+    } // القوس ده بيقفل الـ stages هنا بالظبط!
+
+    // الـ post هنا جوه الـ pipeline وصح 100%
     post {
         success {
             echo '✅✅✅ JENKINS PIPELINE تمام التمام! ✅✅✅'
@@ -76,3 +67,4 @@ pipeline {
             echo 'شوف الـ logs فوق عشان تعرف المشكلة'
         }
     }
+} // القوس النهائي للـ pipeline
