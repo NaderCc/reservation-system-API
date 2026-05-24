@@ -10,6 +10,8 @@ pipeline {
     
     tools {
         nodejs 'node20' 
+        // بننادي هنا على نفس الاسم المكتوب في خانة Name جوه الـ Jenkins Tools
+        dockerTool 'docker20' 
     }
     
     environment {
@@ -49,17 +51,14 @@ pipeline {
             }
         }
         
-        // مرحلة 4: بناء Docker images (صور التطبيق و قاعدة البيانات)
+        // مرحلة 4: بناء وتشغيل الحاويات باستخدام الأداة المعرفة في جينكينز
         stage('4-Docker Compose Deploy') {
             steps {
-                echo '--- جاري التشغيل باستخدم docker-compose الفعلي ---'
-                sh """
-                        docker run --rm \
-                        -v /var/run/docker.sock:/var/run/docker.sock \
-                        -v \$(pwd):\$(pwd) \
-                        -w \$(pwd) \
-                        docker/compose:v2.24.5 up -d --build
-                    """
+                echo '--- جاري التشغيل باستخدام الـ docker-compose الموثوق من الـ Tools ---'
+                
+                // طالما شغالين بـ Docker Client حديث ومتوافق، هنشغل الـ compose المباشر عل طول
+                // ومن غير اللف بتاع الـ docker run المساعد اللي كان بيعمل مشاكل في الـ API version
+                sh 'docker-compose up -d --build'
             }
         }
     }
@@ -69,7 +68,7 @@ pipeline {
     post {
         success {
             echo '✅✅✅ JENKINS PIPELINE تمام التمام! ✅✅✅'
-            echo 'كل المراحل شتغلت بدون مشاكل'
+            echo 'كل المراحل اشتغلت بدون مشاكل والـ Containers قايمة ومنورة!'
         }
         
         failure {
@@ -77,4 +76,3 @@ pipeline {
             echo 'شوف الـ logs فوق عشان تعرف المشكلة'
         }
     }
-
