@@ -55,7 +55,13 @@ pipeline {
         stage('4-Docker Compose Deploy') {
             steps {
                 echo '--- جاري التشغيل باستخدام docker-compose الفعلي ---'
-                sh 'docker compose up -d --build'
+                sh """
+                        docker run --rm \
+                        -v /var/run/docker.sock:/var/run/docker.sock \
+                        -v \$(pwd):\$(pwd) \
+                        -w \$(pwd) \
+                        docker/compose:1.29.2 up -d --build
+                    """
             }
         }
     }
