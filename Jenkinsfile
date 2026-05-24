@@ -29,20 +29,6 @@ pipeline {
     }
     
     stages {
-        stage('📋 تحضير المتغيرات') {
-            steps {
-                script {
-                    echo '--- جاري تحميل متغيرات البيئة من .env ---'
-                    if (fileExists('.env')) {
-                        load '.env'
-                        echo '✅ تم تحميل .env بنجاح'
-                    } else {
-                        error '❌ ملف .env غير موجود! اعمل: cp .env.example .env'
-                    }
-                }
-            }
-        }
-        
         stage('pull code from GitHub') {
             steps {
                 echo 'Pulling code from GitHub...'
