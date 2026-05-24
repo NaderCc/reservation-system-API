@@ -10,6 +10,7 @@ pipeline {
     
     tools {
         nodejs 'node20' 
+        dockerTool 'docker20'
     }
     
     
@@ -54,7 +55,7 @@ pipeline {
         stage('4-Docker Images') {
             steps {
                 echo '--- جاري بناء Docker Images (API + Database) ---'
-                sh 'docker-compose build'
+                sh 'docker compose build'
                 echo '✅ تم البناء بنجاح!'
             }
         }
