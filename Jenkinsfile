@@ -12,7 +12,6 @@ pipeline {
         nodejs 'node20' 
     }
     
-    
     environment {
         PORT = '9090'
         DB_USER = 'postgres'
