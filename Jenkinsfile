@@ -12,11 +12,16 @@ pipeline {
         nodejs 'node20' 
     }
     
-    // ====== متغيرات البيئة من .env ======
-    // Jenkins بيقرأ المتغيرات من ملف .env الموجود في الـ repo
+    
     environment {
-        // بس تأكد أن ملف .env موجود محليًا
-        DOTENV_FILE = '.env'
+        PORT = '9090'
+        DB_USER = 'postgres'
+        DB_NAME = 'reservation_db'
+        DB_HOST = 'localhost' 
+        DB_PORT = '5430'
+        
+        DB_PASSWORD = credentials('db-password-id')
+        JWT_SECRET  = credentials('jwt-secret-id')
     }
     
     options {
@@ -27,17 +32,12 @@ pipeline {
         stage('📋 تحضير المتغيرات') {
             steps {
                 script {
-                    echo '--- جاري التحقق من ملف .env ---'
+                    echo '--- جاري تحميل متغيرات البيئة من .env ---'
                     if (fileExists('.env')) {
-                        echo '✅ ملف .env موجود'
-                        // اقرأ المحتوى
-                        def envContent = readFile('.env')
-                        echo '✅ تم تحميل المتغيرات من .env'
+                        load '.env'
+                        echo '✅ تم تحميل .env بنجاح'
                     } else {
-                        echo '⚠️ ملف .env غير موجود!'
-                        echo 'سيتم استخدام .env.example كمثال'
-                        sh 'cp .env.example .env'
-                        echo '✅ تم إنشاء .env من .env.example - غير القيم الحساسة!'
+                        error '❌ ملف .env غير موجود! اعمل: cp .env.example .env'
                     }
                 }
             }
