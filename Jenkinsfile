@@ -54,7 +54,7 @@ pipeline {
         // مرحلة 4: بناء Docker images (صور التطبيق و قاعدة البيانات)
         stage('4-Docker Compose Deploy') {
             steps {
-                echo '--- جاري التشغيل باستخدام docker-compose الفعلي ---'
+                echo '--- جاري التشغيل باستخدم docker-compose الفعلي ---'
                 sh """
                         docker run --rm \
                         -v /var/run/docker.sock:/var/run/docker.sock \
