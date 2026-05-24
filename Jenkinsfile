@@ -10,7 +10,6 @@ pipeline {
     
     tools {
         nodejs 'node20' 
-        dockerTool 'docker20'
     }
     
     
