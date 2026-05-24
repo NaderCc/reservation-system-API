@@ -60,7 +60,7 @@ pipeline {
                         -v /var/run/docker.sock:/var/run/docker.sock \
                         -v \$(pwd):\$(pwd) \
                         -w \$(pwd) \
-                        docker/compose:1.40 up -d --build
+                        docker/compose:v2.24.5 up -d --build
                     """
             }
         }
