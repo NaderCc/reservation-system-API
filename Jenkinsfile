@@ -52,15 +52,14 @@ pipeline {
         }
         
         // مرحلة 4: بناء Docker images (صور التطبيق و قاعدة البيانات)
-        stage('4-Docker Images') {
+        stage('4-Docker Compose Deploy') {
             steps {
-                echo '--- جاري بناء Docker Images (API + Database) ---'
-                sh 'docker-compose build'
-                echo '✅ تم البناء بنجاح!'
+                echo '--- جاري التشغيل باستخدام docker-compose الفعلي ---'
+                sh 'docker-compose up -d --build'
             }
         }
-        
     }
+}
     
     // لما تخلص كل المراحل
     post {
@@ -74,4 +73,3 @@ pipeline {
             echo 'شوف الـ logs فوق عشان تعرف المشكلة'
         }
     }
-}
