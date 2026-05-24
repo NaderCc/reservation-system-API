@@ -55,7 +55,7 @@ pipeline {
         stage('4-Docker Compose Deploy') {
             steps {
                 echo '--- جاري التشغيل باستخدام docker-compose الفعلي ---'
-                sh 'docker-compose up -d --build'
+                sh 'docker compose up -d --build'
             }
         }
     }
