@@ -11,10 +11,6 @@ const RESERVATION_CONFIG = {
     TIME_PATTERN: /^\d{2}:\d{2}$/
 };
 
-const WALLETS_VALIDATION = {
-
-}
-
 const VALIDATION_CONFIG = {
     USERNAME: {
         MIN_LENGTH: 3,
@@ -33,9 +29,7 @@ const WALLET_CONFIG = {
     MAX_AMOUNT: 999999.99,
     TRANSACTION_TYPES: {
         DEPOSIT: 'deposit',
-        DEDUCT: 'deduct',
-        WITHDRAWAL: 'withdrawal',
-        REFUND: 'refund'
+        DEDUCT: 'deduct'
     },
     AMOUNT_PATTERN: /^\d+(\.\d{1,2})?$/
 };
