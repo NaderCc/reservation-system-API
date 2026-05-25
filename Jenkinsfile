@@ -16,6 +16,7 @@
 //
 // 3. Docker Socket Permissions (Critical for Jenkins Container):
 //    - Execute the following command on the host machine:
+//     - docker exec -u root -it (docker_container_name) bash
 //    - chmod 666 /var/run/docker.sock
 //    - This grants Jenkins container permission to access Docker daemon
 //
@@ -80,9 +81,9 @@ pipeline {
         
         stage('4-Docker Compose Deploy') {
             steps {
-                echo 'Building Docker image...'
-                sh 'docker build -t reservation-api:latest .'
-                echo 'Docker image built successfully'
+                echo 'Deploying application using Docker Compose...'
+                sh 'docker-compose up -d --remove-orphans'
+                echo 'Services deployed successfully'
             }
         }
         
