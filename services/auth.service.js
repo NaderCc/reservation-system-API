@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userRepository = require('../repo/user.repo');
+const walletService = require('../services/wallet.service');
 const { JWT_SECRET } = require('../config/constants');
 
 class AuthService {
@@ -16,6 +17,9 @@ class AuthService {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await userRepository.create(username, hashedPassword);
+
+        // Create wallet automatically for new user
+        await walletService.createWalletForUser(user.id);
 
         return {
             id: user.id,
