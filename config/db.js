@@ -52,7 +52,7 @@ const initDb = async() => {
             CREATE TABLE IF NOT EXISTS wallets (
                 id SERIAL PRIMARY KEY,
                 user_id INTEGER NOT NULL UNIQUE REFERENCES users(id) ,
-                balance DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+                balance DECIMAL(8, 2) NOT NULL DEFAULT 0.00,
                 created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
                 updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()
             );
@@ -62,7 +62,7 @@ const initDb = async() => {
             CREATE TABLE IF NOT EXISTS wallet_transactions (
                 id SERIAL PRIMARY KEY,
                 wallet_id INTEGER NOT NULL REFERENCES wallets(id),
-                amount DECIMAL(10, 2) NOT NULL,
+                amount DECIMAL(8, 2) NOT NULL,
                 transaction_type VARCHAR(20) NOT NULL CHECK (transaction_type IN ('deposit', 'deduct', 'refund', 'withdrawal')),
                 created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()
             );
