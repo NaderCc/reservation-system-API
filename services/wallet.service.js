@@ -61,7 +61,7 @@ class WalletService {
             );
 
             const transactionResult = await client.query(
-                `INSERT INTO wallet_transactions (wallet_id, transaction_type, amount) 
+                `INSERT INTO wallet_transactions (wallet_id, "type", amount) 
                  VALUES ($1, $2, $3) RETURNING *`, [currentWallet.id, WALLET_CONFIG.TRANSACTION_TYPES.DEPOSIT, amount]
             );
 
@@ -125,7 +125,7 @@ class WalletService {
 
             // Record transaction
             const transactionResult = await client.query(
-                `INSERT INTO wallet_transactions (wallet_id, transaction_type, amount) 
+                `INSERT INTO wallet_transactions (wallet_id, "type", amount) 
                  VALUES ($1, $2, $3) RETURNING *`, [currentWallet.id, WALLET_CONFIG.TRANSACTION_TYPES.DEDUCT, amount]
             );
 
