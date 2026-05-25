@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet API Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: white;
+        }
+        
+        header {
+            border-bottom: 3px solid #007bff;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+        }
+        
+        h1 {
+            color: #007bff;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .endpoint {
+            margin: 40px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            page-break-inside: avoid;
+        }
+        
+        .endpoint-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .method {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: white;
+            font-size: 0.9em;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .method.get {
+            background: #28a745;
+        }
+        
+        .method.post {
+            background: #007bff;
+        }
+        
+        .method.put {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .method.delete {
+            background: #dc3545;
+        }
+        
+        .path {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            flex: 1;
+        }
+        
+        .endpoint-content {
+            padding: 20px;
+        }
+        
+        .section {
+            margin: 20px 0;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+        
+        .description {
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        .code-block {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .required {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        
+        .optional {
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .auth-header {
+            background: #e7f3ff;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+        
+        footer {
+            border-top: 1px solid #ddd;
+            margin-top: 40px;
+            padding-top: 20px;
+            color: #666;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        
+        .version {
+            color: #999;
+            font-size: 0.85em;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                padding: 0;
+            }
+            .endpoint {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Wallet API Documentation</h1>
+            <p class="subtitle">Reservation System - User Wallet Management</p>
+            <div class="version">Version 1.0 | May 2026</div>
+        </header>
+
+        <div class="info-box">
+            <strong>Base URL:</strong> <code>http://localhost:9090/wallet</code><br>
+            <strong>Authentication:</strong> All endpoints require JWT token in Authorization header<br>
+            <strong>Content-Type:</strong> application/json
+        </div>
+
+        <div class="info-box">
+            <strong>Authentication Header Required:</strong><br> All endpoints require the following header:
+            <div class="auth-header">Authorization: Bearer &lt;jwt_token&gt;</div>
+        </div>
+
+        <!-- ENDPOINT 1: Get Wallet Balance -->
+        <div class="endpoint">
+            <div class="endpoint-header">
+                <span class="method get">GET</span>
+                <span class="path">/wallet/balance</span>
+            </div>
+            <div class="endpoint-content">
+                <div class="section">
+                    <div class="section-title">Description</div>
+                    <p class="description">Retrieve the current wallet balance and details for the authenticated user.</p>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Request</div>
+                    <p class="description">No request body required. User ID is extracted from JWT token.</p>
+                    <div class="code-block">
+                        GET /wallet/balance HTTP/1.1 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Response (Success - 200 OK)</div>
+                    <div class="success">Status Code: 200 - Wallet balance retrieved successfully</div>
+                    <div class="code-block">
+                        { "success": true, "data": { "id": "wallet-uuid", "user_id": "user-uuid", "balance": 5000.50, "currency": "USD", "created_at": "2026-05-20T10:30:00Z", "updated_at": "2026-05-25T15:45:00Z" } }
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Error Responses</div>
+                    <div class="error"><strong>401 Unauthorized:</strong> Missing or invalid JWT token</div>
+                    <div class="error"><strong>404 Not Found:</strong> Wallet not found for user</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ENDPOINT 2: Get Transaction History -->
+        <div class="endpoint">
+            <div class="endpoint-header">
+                <span class="method get">GET</span>
+                <span class="path">/wallet/transactions</span>
+            </div>
+            <div class="endpoint-content">
+                <div class="section">
+                    <div class="section-title">Description</div>
+                    <p class="description">Retrieve transaction history for the authenticated user's wallet with pagination support.</p>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Query Parameters</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Default</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="optional">limit</span></td>
+                                <td>integer</td>
+                                <td>20</td>
+                                <td>Number of transactions to retrieve per page</td>
+                            </tr>
+                            <tr>
+                                <td><span class="optional">offset</span></td>
+                                <td>integer</td>
+                                <td>0</td>
+                                <td>Number of transactions to skip (for pagination)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Request Examples</div>
+                    <p class="description">Get first 20 transactions:</p>
+                    <div class="code-block">
+                        GET /wallet/transactions HTTP/1.1 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                    </div>
+                    <p class="description">Get next 20 transactions (page 2):</p>
+                    <div class="code-block">
+                        GET /wallet/transactions?limit=20&offset=20 HTTP/1.1 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Response (Success - 200 OK)</div>
+                    <div class="success">Status Code: 200 - Transaction history retrieved successfully</div>
+                    <div class="code-block">
+                        { "success": true, "data": { "transactions": [ { "id": "transaction-id-1", "wallet_id": "wallet-uuid", "type": "DEPOSIT", "amount": 1000.00, "description": "Top up wallet", "balance_after": 6000.50, "created_at": "2026-05-25T14:30:00Z" }, { "id": "transaction-id-2",
+                        "wallet_id": "wallet-uuid", "type": "WITHDRAWAL", "amount": 500.00, "description": "Reservation payment", "balance_after": 5500.50, "created_at": "2026-05-24T10:15:00Z" } ], "pagination": { "limit": 20, "offset": 0, "total": 45
+                        } } }
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Error Responses</div>
+                    <div class="error"><strong>401 Unauthorized:</strong> Missing or invalid JWT token</div>
+                    <div class="error"><strong>404 Not Found:</strong> Wallet not found for user</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ENDPOINT 3: Deposit Money -->
+        <div class="endpoint">
+            <div class="endpoint-header">
+                <span class="method post">POST</span>
+                <span class="path">/wallet/deposit</span>
+            </div>
+            <div class="endpoint-content">
+                <div class="section">
+                    <div class="section-title">Description</div>
+                    <p class="description">Add funds to the authenticated user's wallet. The transaction is recorded in the wallet history.</p>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Request Body</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="required">amount</span></td>
+                                <td>number</td>
+                                <td>Amount to deposit (must be positive, max 2 decimal places)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Request Example</div>
+                    <div class="code-block">
+                        POST /wallet/deposit HTTP/1.1 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... Content-Type: application/json { "amount": 1000.50 }
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Response (Success - 200 OK)</div>
+                    <div class="success">Status Code: 200 - Deposit processed successfully</div>
+                    <div class="code-block">
+                        { "success": true, "data": { "transaction_id": "tx-unique-id", "type": "DEPOSIT", "amount": 1000.50, "balance_before": 5000.00, "balance_after": 6000.50, "created_at": "2026-05-25T15:45:00Z" } }
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Error Responses</div>
+                    <div class="error"><strong>400 Bad Request:</strong> Invalid amount format or amount not provided</div>
+                    <div class="error"><strong>400 Bad Request:</strong> Amount must be positive number</div>
+                    <div class="error"><strong>401 Unauthorized:</strong> Missing or invalid JWT token</div>
+                    <div class="error"><strong>404 Not Found:</strong> Wallet not found for user</div>
+                    <div class="error"><strong>500 Internal Server Error:</strong> Database transaction failed</div>
+                </div>
+
+                <div class="note">
+                    <strong>Note:</strong> Deposit transactions are ACID-compliant. If any error occurs during processing, the transaction is automatically rolled back.
+                </div>
+            </div>
+        </div>
+
+        <!-- ENDPOINT 4: Deduct/Withdraw Money -->
+        <div class="endpoint">
+            <div class="endpoint-header">
+                <span class="method post">POST</span>
+                <span class="path">/wallet/deduct</span>
+            </div>
+            <div class="endpoint-content">
+                <div class="section">
+                    <div class="section-title">Description</div>
+                    <p class="description">Withdraw or deduct funds from the authenticated user's wallet. The operation checks for sufficient balance before processing.</p>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Request Body</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="required">amount</span></td>
+                                <td>number</td>
+                                <td>Amount to withdraw (must be positive, max 2 decimal places)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Request Example</div>
+                    <div class="code-block">
+                        POST /wallet/deduct HTTP/1.1 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... Content-Type: application/json { "amount": 250.75 }
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Response (Success - 200 OK)</div>
+                    <div class="success">Status Code: 200 - Withdrawal processed successfully</div>
+                    <div class="code-block">
+                        { "success": true, "data": { "transaction_id": "tx-unique-id", "type": "WITHDRAWAL", "amount": 250.75, "balance_before": 6000.50, "balance_after": 5749.75, "created_at": "2026-05-25T16:20:00Z" } }
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Error Responses</div>
+                    <div class="error"><strong>400 Bad Request:</strong> Invalid amount format or amount not provided</div>
+                    <div class="error"><strong>400 Bad Request:</strong> Amount must be positive number</div>
+                    <div class="error"><strong>400 Bad Request:</strong> Insufficient balance in wallet</div>
+                    <div class="error"><strong>401 Unauthorized:</strong> Missing or invalid JWT token</div>
+                    <div class="error"><strong>404 Not Found:</strong> Wallet not found for user</div>
+                    <div class="error"><strong>500 Internal Server Error:</strong> Database transaction failed</div>
+                </div>
+
+                <div class="note">
+                    <strong>Note:</strong> Deduction operations validate sufficient balance before processing. Transactions are ACID-compliant and rolled back on failure.
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div style="margin-top: 60px; padding-top: 20px; border-top: 2px solid #ddd;">
+            <h2 style="color: #007bff; margin-bottom: 20px;">General Information</h2>
+
+            <div class="section">
+                <div class="section-title">Authentication</div>
+                <p class="description">All wallet endpoints require JWT token authentication. The token must be included in the Authorization header with the "Bearer" scheme.</p>
+                <div class="info-box">
+                    Example header: <code>Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</code>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Data Types</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Format</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>amount</td>
+                            <td>Decimal number (0.00 to 999999.99)</td>
+                            <td>1000.50</td>
+                        </tr>
+                        <tr>
+                            <td>balance</td>
+                            <td>Decimal number with 2 decimals</td>
+                            <td>5000.50</td>
+                        </tr>
+                        <tr>
+                            <td>timestamp</td>
+                            <td>ISO 8601 format</td>
+                            <td>2026-05-25T15:45:00Z</td>
+                        </tr>
+                        <tr>
+                            <td>UUID</td>
+                            <td>Standard UUID format</td>
+                            <td>550e8400-e29b-41d4-a716-446655440000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Transaction Types</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Endpoint</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>DEPOSIT</td>
+                            <td>Money added to wallet</td>
+                            <td>POST /wallet/deposit</td>
+                        </tr>
+                        <tr>
+                            <td>WITHDRAWAL</td>
+                            <td>Money withdrawn from wallet</td>
+                            <td>POST /wallet/deduct</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Common Error Codes</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status Code</th>
+                            <th>Meaning</th>
+                            <th>Common Causes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>200</td>
+                            <td>OK</td>
+                            <td>Request successful</td>
+                        </tr>
+                        <tr>
+                            <td>400</td>
+                            <td>Bad Request</td>
+                            <td>Invalid input, insufficient balance, invalid amount</td>
+                        </tr>
+                        <tr>
+                            <td>401</td>
+                            <td>Unauthorized</td>
+                            <td>Missing or invalid JWT token</td>
+                        </tr>
+                        <tr>
+                            <td>404</td>
+                            <td>Not Found</td>
+                            <td>Wallet not found for user</td>
+                        </tr>
+                        <tr>
+                            <td>500</td>
+                            <td>Internal Server Error</td>
+                            <td>Database error, transaction failure</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer>
+            <p>Reservation System API | Wallet Feature Documentation</p>
+            <p style="margin-top: 10px;">This documentation is auto-generated and reflects the current API implementation.</p>
+        </footer>
+    </div>
+</body>
+
+</html>
