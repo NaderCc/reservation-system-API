@@ -62,16 +62,22 @@ const initDb = async() => {
             CREATE TABLE IF NOT EXISTS wallet_transactions (
                 id SERIAL PRIMARY KEY,
                 wallet_id INTEGER NOT NULL REFERENCES wallets(id),
+                type VARCHAR(20) NOT NULL CHECK (type IN ('deposit', 'deduct')),
                 amount DECIMAL(8, 2) NOT NULL,
-                transaction_type VARCHAR(20) NOT NULL CHECK (transaction_type IN ('deposit', 'deduct', 'refund', 'withdrawal')),
                 created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()
             );
         `);
 
         await pool.query(`
-            CREATE INDEX IF NOT EXISTS idx_wallet_transactions_wallet_id ON wallet_transactions(wallet_id);
-            CREATE INDEX IF NOT EXISTS idx_wallet_transactions_transaction_type ON wallet_transactions(transaction_type);
-            CREATE INDEX IF NOT EXISTS idx_wallet_transactions_created_at ON wallet_transactions(created_at);
+            CREATE INDEX IF NOT EXISTS idx_wallet_transactions_wallet_id ON wallet_transactions(wallet_id)
+        `);
+
+        await pool.query(`
+            CREATE INDEX IF NOT EXISTS idx_wallet_transactions_type ON wallet_transactions(type)
+        `);
+
+        await pool.query(`
+            CREATE INDEX IF NOT EXISTS idx_wallet_transactions_created_at ON wallet_transactions(created_at)
         `);
         console.log('Database schema initialized successfully.');
     } catch (err) {
