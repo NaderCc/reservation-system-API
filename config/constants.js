@@ -11,6 +11,10 @@ const RESERVATION_CONFIG = {
     TIME_PATTERN: /^\d{2}:\d{2}$/
 };
 
+const WALLETS_VALIDATION = {
+
+}
+
 const VALIDATION_CONFIG = {
     USERNAME: {
         MIN_LENGTH: 3,
@@ -22,6 +26,18 @@ const VALIDATION_CONFIG = {
         PATTERN: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
         PASTERN_MESSAGE: 'Password must be at least 6 characters long and contain at least one letter and one number.'
     }
+};
+
+const WALLET_CONFIG = {
+    MIN_AMOUNT: 0.01,
+    MAX_AMOUNT: 999999.99,
+    TRANSACTION_TYPES: {
+        DEPOSIT: 'deposit',
+        DEDUCT: 'deduct',
+        WITHDRAWAL: 'withdrawal',
+        REFUND: 'refund'
+    },
+    AMOUNT_PATTERN: /^\d+(\.\d{1,2})?$/
 };
 
 const HTTP_MESSAGES = {
@@ -37,5 +53,6 @@ module.exports = {
     JWT_SECRET,
     RESERVATION_CONFIG,
     VALIDATION_CONFIG,
+    WALLET_CONFIG,
     HTTP_MESSAGES
 };
