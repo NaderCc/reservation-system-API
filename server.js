@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 
 const authRoutes = require('./routes/auth.routes');
 const reservationRoutes = require('./routes/reservation.routes');
+const walletRoutes = require('./routes/wallet.routes');
 const { initDb } = require('./config/db');
 
 const app = express();
@@ -33,6 +34,7 @@ const authLimiter = rateLimit({
 app.use(limiter);
 app.use('/auth', authLimiter, authRoutes);
 app.use('/reservations', reservationRoutes);
+app.use('/wallet', walletRoutes);
 
 app.use((req, res) => {
     res.status(404).json({

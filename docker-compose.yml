@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   postgres_db:
@@ -12,6 +12,12 @@ services:
       - "5430:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-reservation_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   api:
     build: .
@@ -19,7 +25,8 @@ services:
     ports:
       - "9090:9090"
     depends_on:
-      - postgres_db
+      postgres_db:
+        condition: service_healthy
     environment:
       DB_HOST: postgres_db 
       DB_USER: ${DB_USER:-postgres}
