@@ -80,20 +80,16 @@ pipeline {
         
         stage('4-Docker Compose Deploy') {
             steps {
-                echo 'Deploying application using Docker Compose...'
-                sh 'docker-compose down -v'
-                sh 'docker-compose build --no-cache'
-                sh 'docker-compose up -d'
-                echo 'Waiting for services to start...'
-                sh 'sleep 10'
+                echo 'Building Docker image...'
+                sh 'docker build -t reservation-api:latest .'
+                echo 'Docker image built successfully'
             }
         }
         
         stage('5-Health Check') {
             steps {
-                echo 'Verifying service health...'
-                sh 'docker-compose ps'
-                sh 'docker-compose logs api | tail -20'
+                echo 'Skipping docker-compose restart (Jenkins runs in container)'
+                sh 'docker images | grep reservation-api'
             }
         }
     } 
