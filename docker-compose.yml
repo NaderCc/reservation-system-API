@@ -18,6 +18,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    networks:
+      - reservation_net
 
   api:
     build: .
@@ -33,20 +35,26 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-password123}
       DB_NAME: ${DB_NAME:-reservation_db}
       DB_PORT: 5432
-
-  # jenkins:
-  #   image: jenkins/jenkins:lts
-  #   container_name: jenkins_server
-  #   user: root
-  #   ports:
-  #     - "8080:8080"
-  #     - "50000:50000"
-  #   volumes:
-  #     - jenkins_home:/var/jenkins_home
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   environment:
-  #     DOCKER_HOST: unix:///var/run/docker.sock
-
+    networks:
+      - reservation_net
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins_server
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DOCKER_HOST: unix:///var/run/docker.sock
+    networks:
+      - reservation_net
+networks:
+  reservation_net:
+    external: true
+    name: reservation_network
 volumes:
   pgdata:
   jenkins_home:

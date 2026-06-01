@@ -81,9 +81,19 @@ pipeline {
         
         stage('4-Docker Compose Deploy') {
             steps {
-                echo 'Deploying application using Docker Compose...'
-                sh 'docker-compose up -d --remove-orphans'
-                echo 'Services deployed successfully'
+                echo 'Checking and Deploying API...'
+                script {
+                    // 1. التشييك على الكونتينر ومسحه لو موجود
+                    sh '''
+                        if [ "$(docker ps -aq -f name=reservation_api)" ]; then
+                            echo "Container reservation_api exists. Removing it to avoid conflict..."
+                            docker rm -f reservation_api
+                        fi
+                    '''
+                    
+                    // 2. تشغيل الحاوية الجديدة بأمان جوه الشبكة الموحدة
+                    sh 'docker compose up -d api'
+                }
             }
         }
         
