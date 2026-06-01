@@ -83,16 +83,13 @@ pipeline {
             steps {
                 echo 'Checking and Deploying API...'
                 script {
-                    // 1. التشييك على الكونتينر ومسحه لو موجود
                     sh '''
                         if [ "$(docker ps -aq -f name=reservation_api)" ]; then
-                            echo "Container reservation_api exists. Removing it to avoid conflict..."
-                            docker rm -f reservation_api
+                            echo "Container reservation_api exists..."
+                        else
+                            sh 'docker compose up -d'
                         fi
                     '''
-                    
-                    // 2. تشغيل الحاوية الجديدة بأمان جوه الشبكة الموحدة
-                    sh 'docker compose up -d api'
                 }
             }
         }
