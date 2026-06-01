@@ -34,19 +34,20 @@ services:
       DB_NAME: ${DB_NAME:-reservation_db}
       DB_PORT: 5432
 
-  jenkins:
-    image: jenkins/jenkins:lts
-    container_name: jenkins_server
-    user: root
-    ports:
-      - "8080:8080"
-      - "50000:50000"
-    volumes:
-      - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      DOCKER_HOST: unix:///var/run/docker.sock
+  # jenkins:
+  #   image: jenkins/jenkins:lts
+  #   container_name: jenkins_server
+  #   user: root
+  #   ports:
+  #     - "8080:8080"
+  #     - "50000:50000"
+  #   volumes:
+  #     - jenkins_home:/var/jenkins_home
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   environment:
+  #     DOCKER_HOST: unix:///var/run/docker.sock
 
 volumes:
   pgdata:
   jenkins_home:
+  
