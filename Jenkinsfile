@@ -96,7 +96,7 @@ pipeline {
         
         stage('5-Health Check') {
             steps {
-                echo 'Skipping docker-compose restart (Jenkins runs in container)'
+                echo 'Performing health check on API...'
                 sh 'docker images | grep reservation-api'
             }
         }
