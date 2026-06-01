@@ -87,7 +87,7 @@ pipeline {
                         if [ "$(docker ps -aq -f name=reservation_api)" ]; then
                             echo "Container reservation_api exists..."
                         else
-                            sh 'docker compose up -d'
+                            sh 'docker-compose up'
                         fi
                     '''
                 }
