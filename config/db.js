@@ -122,7 +122,7 @@ const initDb = async() => {
             }
 
         } else {
-            console.log("Migration 002 already executed. Skipping...");
+            console.log("Migration 002 already executed. Skipping....");
         }
 
     } catch (err) {
