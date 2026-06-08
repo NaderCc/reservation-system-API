@@ -51,11 +51,16 @@ services:
       DOCKER_HOST: unix:///var/run/docker.sock
     networks:
       - reservation_net
+
 networks:
   reservation_net:
     external: true
     name: reservation_network
+
 volumes:
   pgdata:
   jenkins_home:
+    external: true
+  
+
   

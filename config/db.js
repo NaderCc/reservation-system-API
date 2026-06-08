@@ -74,7 +74,7 @@ const initDb = async() => {
             );
         `);
 
-        await pool.query(`INSERT INTO POSTGRES_MIGRATIONS (migration_name) VALUES ($1) ON CONFLICT (migration_name) DO NOTHING`, ['001_initialize_schema']);
+        const checkMigration = await pool.query(`SELECT * FROM POSTGRES_MIGRATIONS WHERE migration_name = $1`, ['001_initialize_schema']);
         console.log('Database schema initialized successfully.');
         //check migarations 
         if (checkMigration.rows.length === 0) {
