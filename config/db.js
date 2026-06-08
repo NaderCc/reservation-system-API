@@ -28,6 +28,12 @@ pool.on('error', (err) => {
 
 const initDb = async() => {
     try {
+        await pool.query(`CREATE TABLE IF NOT EXISTS POSTGRES_MIGRATIONS (
+            id SERIAL PRIMARY KEY,
+            migration_name VARCHAR(255) UNIQUE NOT NULL,
+            applied_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()
+        );`);
+
         await pool.query(`
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -68,22 +74,62 @@ const initDb = async() => {
             );
         `);
 
-        await pool.query(`
-            CREATE INDEX IF NOT EXISTS idx_wallet_transactions_wallet_id ON wallet_transactions(wallet_id)
-        `);
-
-        await pool.query(`
-            CREATE INDEX IF NOT EXISTS idx_wallet_transactions_type ON wallet_transactions(type)
-        `);
-
-        await pool.query(`
-            CREATE INDEX IF NOT EXISTS idx_wallet_transactions_created_at ON wallet_transactions(created_at)
-        `);
+        await pool.query(`INSERT INTO POSTGRES_MIGRATIONS (migration_name) VALUES ($1) ON CONFLICT (migration_name) DO NOTHING`, ['001_initialize_schema']);
         console.log('Database schema initialized successfully.');
+        //check migarations 
+        if (checkMigration.rows.length === 0) {
+            console.log("⚡ Executing Migration 002: Adding Cinemas & UUID keys...");
+
+            await pool.query('BEGIN');
+
+            try {
+                await pool.query(`
+                    CREATE TABLE IF NOT EXISTS cinemas (
+                        id SERIAL PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL,
+                        location VARCHAR(255),
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
+                `);
+
+                await pool.query(`
+                    ALTER TABLE reservations 
+                    ADD COLUMN cinema_id INT REFERENCES cinemas(id) ON DELETE CASCADE,
+                    ADD COLUMN res_uuid UUID NOT NULL DEFAULT gen_random_uuid();
+                `);
+
+                await pool.query(`
+                    ALTER TABLE reservations DROP CONSTRAINT IF EXISTS reservations_pkey;
+                    ALTER TABLE reservations DROP CONSTRAINT IF EXISTS reservations_res_date_res_time_key;
+                `);
+
+                await pool.query(`
+                    ALTER TABLE reservations ADD PRIMARY KEY (res_uuid, cinema_id);
+                    ALTER TABLE reservations ADD CONSTRAINT unique_cinema_slot UNIQUE (cinema_id, res_date, res_time);
+                `);
+
+                await pool.query(
+                    "INSERT INTO POSTGRES_MIGRATIONS (migration_name) VALUES ($1)", ['002_add_cinemas_vendors_and_uuid']
+                );
+
+                await pool.query('COMMIT');
+                console.log("✅ Migration 002 executed successfully and changes committed!");
+
+            } catch (migrationErr) {
+                await pool.query('ROLLBACK');
+                console.error("Migration 002 failed! Rolling back changes...", migrationErr);
+                throw migrationErr;
+            }
+
+        } else {
+            console.log("Migration 002 already executed. Skipping...");
+        }
+
     } catch (err) {
         console.error('Error initializing database schema', err);
         process.exit(1);
     }
+
 };
 
 module.exports = {
