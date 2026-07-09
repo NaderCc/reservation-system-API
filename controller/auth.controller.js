@@ -1,52 +1,50 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const pool = require('../config/db');
+const authService = require('../services/auth.service');
+const { validateUsername, validatePassword } = require('../utils/validators');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_2026';
-
-exports.register = async(req, res) => {
-    const { username, password } = req.body;
-    const insertUserQuery = 'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id, username';
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Username and password are required' });
-    }
-    if (password.length < 6) {
-        return res.status(400).json({ error: 'Password must be at least 6 characters long' });
-    }
-    if (username.length < 3) {
-        return res.status(400).json({ error: 'Username must be at least 3 characters long' });
-    }
-    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-        return res.status(400).json({ error: 'Username can only contain letters, numbers, and underscores' });
-    }
+exports.register = async(req, res, next) => {
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await pool.query(
-            insertUserQuery, [username, hashedPassword]
-        );
-        res.status(201).json(result.rows[0]);
-    } catch (err) {
-        if (err.code === '23505') {
-            return res.status(400).json({ error: 'Username already exists' });
+        const { username, password } = req.body;
+        let validationResult = validateUsername(username);
+        if (!validationResult.valid) {
+            return res.status(400).json({ error: validationResult.error });
         }
-        console.error('Error registering user:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
+
+        const validation = validatePassword(password);
+        if (!validation.valid) {
+            return res.status(400).json({ success: false, error: validation.error });
+        }
+
+        const user = await authService.register(username, password);
+
+        res.status(201).json({
+            success: true,
+            data: user,
+        });
+    } catch (err) {
+        next(err);
     }
 };
 
-exports.login = async(req, res) => {
-    const { username, password } = req.body;
+exports.login = async(req, res, next) => {
     try {
-        const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-        if (result.rows.length === 0) return res.status(401).json({ error: 'Invalid credentials' });
+        const { username, password } = req.body;
 
-        const user = result.rows[0];
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
+        let validationResult = validateUsername(username);
+        if (!validationResult.valid) {
+            return res.status(400).json({ error: validationResult.error });
+        }
 
-        const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token });
+        validationResult = validatePassword(password);
+        if (!validationResult.valid) {
+            return res.status(400).json({ error: validationResult.error });
+        }
+
+        const result = await authService.login(username, password);
+        res.json({
+            success: true,
+            data: result,
+        });
     } catch (err) {
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(err);
     }
 };

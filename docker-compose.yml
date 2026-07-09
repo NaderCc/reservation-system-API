@@ -1,31 +1,32 @@
-version: '3.8'
-
 services:
-  postgres_db:
-    image: postgres:15-alpine
-    container_name: reservation_postgres
-    environment:
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-password123}
-      POSTGRES_DB: ${DB_NAME:-reservation_db}
-    ports:
-      - "5430:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
   api:
     build: .
     container_name: reservation_api
+    restart: always
     ports:
-      - "9090:9090"
-    depends_on:
-      - postgres_db
+      - "80:9090"
     environment:
-      DB_HOST: postgres_db 
-      DB_USER: ${DB_USER:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-password123}
-      DB_NAME: ${DB_NAME:-reservation_db}
+      DB_HOST: database-1.c3mme0e2uo2q.eu-central-1.rds.amazonaws.com
+      DB_USER: postgres
+      DB_PASSWORD: Nader0200
+      DB_NAME: reservation_db
       DB_PORT: 5432
-
-volumes:
-  pgdata:
+      REDIS_HOST: master.reservation-redis.ewt0i7.euc1.cache.amazonaws.com
+      REDIS_PORT: 6379
+    networks:
+      - reservation_net
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: strongpassword123
+    ports:
+      - "8080:80"
+    networks:
+      - reservation_net
+    restart: always
+networks:
+  reservation_net:
+    external: true
+    name: reservation_network
