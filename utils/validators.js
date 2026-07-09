@@ -1,4 +1,4 @@
-const { VALIDATION_CONFIG, RESERVATION_CONFIG, WALLET_CONFIG } = require('../config/constants');
+const { VALIDATION_CONFIG, RESERVATION_CONFIG, WALLET_CONFIG, PAGINATION_CONFIG } = require('../config/constants');
 // validate username and password based on the rules defined in constants.js
 
 const validateReservationDateTime = (res_date, res_time) => {
@@ -145,6 +145,27 @@ const validateDeductRequest = (userId, amount) => {
 
     return { valid: true, error: null };
 };
+const validateAndSanitizePagination = (limit, offset) => {
+    let parsedLimit = parseInt(limit, 10);
+    let parsedOffset = parseInt(offset, 10);
+
+    if (isNaN(parsedLimit) || parsedLimit <= 0) {
+        parsedLimit = PAGINATION_CONFIG.DEFAULT_LIMIT;
+    }
+    if (isNaN(parsedOffset) || parsedOffset < 0) {
+        parsedOffset = PAGINATION_CONFIG.DEFAULT_OFFSET;
+    }
+
+    // حماية السيرفر من الـ Overloading بناءً على الـ Config
+    if (parsedLimit > PAGINATION_CONFIG.MAX_LIMIT) {
+        parsedLimit = PAGINATION_CONFIG.MAX_LIMIT;
+    }
+
+    return {
+        limit: parsedLimit,
+        offset: parsedOffset
+    };
+};
 
 module.exports = {
     validateReservationDateTime,
@@ -157,4 +178,5 @@ module.exports = {
     validateWalletId,
     validateDepositRequest,
     validateDeductRequest,
+    validateAndSanitizePagination,
 };

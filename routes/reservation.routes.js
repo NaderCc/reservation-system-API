@@ -1,10 +1,12 @@
 const express = require('express');
-const authController = require('../controller/auth.controller');
+const reservationController = require('../controller/res.controller');
+const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.post('/register', authController.register);
-
-router.post('/login', authController.login);
+router.get('/', authMiddleware, reservationController.getAllReservations);
+router.post('/', authMiddleware, reservationController.createReservation);
+router.put('/:id', authMiddleware, reservationController.updateReservation);
+router.delete('/:id', authMiddleware, reservationController.deleteReservation);
 
 module.exports = router;

@@ -16,6 +16,9 @@ const pool = new Pool({
     max: 50,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 5000,
+    ssl: {
+        rejectUnauthorized: false // أضف هذا السطر فقط إذا فشل الاتصال بدون SSL
+    }
 });
 
 pool.on('connect', () => {
@@ -93,14 +96,31 @@ const initDb = async() => {
                 `);
 
                 await pool.query(`
+                    CREATE TABLE IF NOT EXISTS Movies (
+                        id SERIAL PRIMARY KEY,
+                        title VARCHAR(255) NOT NULL,
+                        description TEXT,
+                        duration INT,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
+                `);
+
+                // Add cinema_id column if it doesn't exist
+                await pool.query(`
                     ALTER TABLE reservations 
-                    ADD COLUMN cinema_id INT REFERENCES cinemas(id) ON DELETE CASCADE,
-                    ADD COLUMN res_uuid UUID NOT NULL DEFAULT gen_random_uuid();
+                    ADD COLUMN IF NOT EXISTS cinema_id INT REFERENCES cinemas(id) ON DELETE CASCADE;
+                `);
+
+                // Add res_uuid column if it doesn't exist
+                await pool.query(`
+                    ALTER TABLE reservations 
+                    ADD COLUMN IF NOT EXISTS res_uuid UUID DEFAULT gen_random_uuid();
                 `);
 
                 await pool.query(`
                     ALTER TABLE reservations DROP CONSTRAINT IF EXISTS reservations_pkey;
                     ALTER TABLE reservations DROP CONSTRAINT IF EXISTS reservations_res_date_res_time_key;
+                    ALTER TABLE reservations DROP CONSTRAINT IF EXISTS unique_cinema_slot;
                 `);
 
                 await pool.query(`
@@ -109,7 +129,7 @@ const initDb = async() => {
                 `);
 
                 await pool.query(
-                    "INSERT INTO POSTGRES_MIGRATIONS (migration_name) VALUES ($1)", ['002_add_cinemas_vendors_and_uuid']
+                    "INSERT INTO POSTGRES_MIGRATIONS (migration_name) VALUES ($1) ON CONFLICT DO NOTHING", ['002_add_cinemas_vendors_and_uuid']
                 );
 
                 await pool.query('COMMIT');
@@ -127,7 +147,8 @@ const initDb = async() => {
 
     } catch (err) {
         console.error('Error initializing database schema', err);
-        process.exit(1);
+        // Don't exit, allow server to continue
+        return false;
     }
 
 };

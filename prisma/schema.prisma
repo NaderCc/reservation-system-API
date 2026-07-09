@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model cinemas {
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(255)
+  location     String?        @db.VarChar(255)
+  created_at   DateTime?      @default(now()) @db.Timestamp(6)
+  image_url    String?
+  reservations reservations[]
+  showtimes    showtimes[]
+}
+
+model movies {
+  id          Int         @id @default(autoincrement())
+  title       String      @db.VarChar(255)
+  description String?
+  duration    Int?
+  created_at  DateTime?   @default(now()) @db.Timestamp(6)
+  image_url   String?
+  showtimes   showtimes[]
+}
+
+model postgres_migrations {
+  id             Int       @id @default(autoincrement())
+  migration_name String    @unique @db.VarChar(255)
+  applied_at     DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model reservations {
+  id          Int                @default(autoincrement())
+  user_id     Int
+  res_date    DateTime           @db.Date
+  res_time    DateTime           @db.Time(6)
+  created_at  DateTime?          @default(now()) @db.Timestamp(6)
+  res_uuid    String             @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slot_id     Int
+  seats_count Int                @default(1)
+  total_price Decimal            @db.Decimal(10, 2)
+  cinema_id   Int
+  status      reservation_status @default(confirmed)
+  cinemas     cinemas            @relation(fields: [cinema_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  showtimes   showtimes          @relation(fields: [slot_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users       users              @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([res_uuid, cinema_id])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model showtimes {
+  id              Int            @id @default(autoincrement())
+  cinema_id       Int?
+  movie_id        Int?
+  start_time      DateTime       @db.Timestamp(6)
+  end_time        DateTime       @db.Timestamp(6)
+  total_seats     Int            @default(100)
+  available_seats Int            @default(100)
+  price           Decimal?       @default(150.00) @db.Decimal(10, 2)
+  reservations    reservations[]
+  cinemas         cinemas?       @relation(fields: [cinema_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  movies          movies?        @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([cinema_id, movie_id], map: "idx_showtimes_cinema_movie")
+}
+
+model users {
+  id           Int            @id @default(autoincrement())
+  username     String         @unique @db.VarChar(255)
+  password     String
+  created_at   DateTime?      @default(now()) @db.Timestamp(6)
+  reservations reservations[]
+  wallets      wallets?
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model wallet_transactions {
+  id         Int       @id @default(autoincrement())
+  wallet_id  Int
+  type       String    @db.VarChar(20)
+  amount     Decimal   @db.Decimal(8, 2)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  wallets    wallets   @relation(fields: [wallet_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model wallets {
+  id                  Int                   @id @default(autoincrement())
+  user_id             Int                   @unique
+  balance             Decimal               @default(0.00) @db.Decimal(8, 2)
+  created_at          DateTime?             @default(now()) @db.Timestamp(6)
+  updated_at          DateTime?             @default(now()) @db.Timestamp(6)
+  wallet_transactions wallet_transactions[]
+  users               users                 @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+enum reservation_status {
+  confirmed
+  cancelled
+  pending
+}

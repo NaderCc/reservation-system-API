@@ -3,7 +3,17 @@ const { pool } = require('../config/db');
 class ReservationRepository {
     async findByUserId(userId, limit = 10, offset = 0) {
         const dataResult = await pool.query(
-            'SELECT * FROM reservations WHERE user_id = $1 ORDER BY res_date DESC LIMIT $2 OFFSET $3', [userId, limit, offset]
+            `SELECT
+                r.*,
+                c.name AS cinema_name,
+                m.title AS movie_title
+            FROM reservations r
+            JOIN showtimes s ON r.slot_id = s.id
+            JOIN cinemas c ON r.cinema_id = c.id
+            JOIN movies m ON s.movie_id = m.id
+            WHERE r.user_id = $1
+            ORDER BY r.res_date DESC
+            LIMIT $2 OFFSET $3`, [userId, limit, offset]
         );
 
         const countResult = await pool.query(

@@ -43,10 +43,17 @@ const HTTP_MESSAGES = {
     CONFLICT: 'Conflict: Resource already exists or is unavailable',
 };
 
+const PAGINATION_CONFIG = {
+    DEFAULT_LIMIT: 10,
+    DEFAULT_OFFSET: 0,
+    MAX_LIMIT: 50
+};
+
 module.exports = {
     JWT_SECRET,
     RESERVATION_CONFIG,
     VALIDATION_CONFIG,
     WALLET_CONFIG,
-    HTTP_MESSAGES
+    HTTP_MESSAGES,
+    PAGINATION_CONFIG
 };
